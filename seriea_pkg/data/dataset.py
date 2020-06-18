@@ -1,4 +1,4 @@
-from seriea_pkg.services import football_api as fbapi
+from seriea_pkg.services.football_api import FootballAPIClient
 from seriea_pkg.data.rounds import Rounds
 from os import listdir
 from os.path import isfile, join as Path
@@ -18,7 +18,8 @@ def load_dataset(season, dir):
     return Rounds(df)
 
 def download_dataset(season):
-    fat_fixtures = fbapi.get_league_rounds(season)
+    client = FootballAPIClient()
+    fat_fixtures = client.get_league_rounds(season)
     fixtures = list(map(reduce_fixture, fat_fixtures))
     return fixtures
 

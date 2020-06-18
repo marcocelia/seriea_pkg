@@ -1,5 +1,6 @@
 from seriea_pkg.data import constants as consts
 from seriea_pkg.data.match_type import MatchType
+from itertools import starmap
 
 class TeamResult:
 
@@ -26,34 +27,16 @@ class TeamResult:
         return TeamResult(self.team, twon, tdraw, tloss, tscored, tsuffered)
 
     def __str__(self):
-        return ', '.join(map(
-            lambda x: str(x),
-            (self.team, self.points, self.won, self.draw, self.loss, self.scored, self.suffered)
-        ))
+        pairs = list(zip(self.get_labels(), self.as_tuple()))
+        return self.team + ': ' + ', '.join(starmap(lambda x,y: f"{x}={y}", pairs))
+
+    def as_tuple(self):
+        return (self.points, self.played, self.won, self.draw, self.loss, self.scored, self.suffered)
 
     @classmethod
-    def compute_team_results(cls, rounds, teamname, strtype=MatchType.TYPE_ALL):
-        mtype = MatchType(strtype)
+    def get_labels(cls):
+        return ('Points', 'Played', 'Won', 'Draw', 'Loss', 'Goals Scored', 'Goals Suffered')
 
-        if mtype.all():
-            home = rounds.filter_team(teamname, MatchType.TYPE_HOME)
-            away = rounds.filter_team(teamname, MatchType.TYPE_AWAY)
-            return cls.compute_team_results(home, teamname, MatchType.TYPE_HOME) + cls.compute_team_results(away, teamname, MatchType.TYPE_AWAY)
-
-        if mtype.home():
-            won_mask = (rounds.df[consts.GOALS_HOME] > rounds.df[consts.GOALS_AWAY])
-            scored_mask = consts.GOALS_HOME
-            suffered_mask = consts.GOALS_AWAY
-        else:
-            won_mask = (rounds.df[consts.GOALS_AWAY] > rounds.df[consts.GOALS_HOME])
-            scored_mask = consts.GOALS_AWAY
-            suffered_mask = consts.GOALS_HOME
-
-        draw_mask = (rounds.df[consts.GOALS_HOME] == rounds.df[consts.GOALS_AWAY])
-
-        won = rounds.df[won_mask].shape[0]
-        draw = rounds.df[draw_mask].shape[0]
-        loss = rounds.df.shape[0] - won - draw
-        scored = rounds.df[scored_mask].sum()
-        suffered = rounds.df[suffered_mask].sum()
-        return TeamResult(teamname, won, draw, loss, scored, suffered)
+    @classmethod
+    def sort_criteria(cls):
+        return ['Points', 'Goals Scored']

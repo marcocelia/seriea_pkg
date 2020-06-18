@@ -3,4 +3,4 @@
 datasets/*
 
 # Contains secret key for Football API
-seriea_pkg/services/conf.json
+keyfile.txt

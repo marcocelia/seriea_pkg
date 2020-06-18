@@ -1,31 +1,69 @@
 import requests
 import json
-from os.path import abspath, dirname
+import configparser
+from os.path import abspath, dirname, exists
 
-cfg = f"{dirname(abspath(__file__))}/conf.json"
-with open(cfg) as json_data:
-    headers = json.load(json_data)
+class FootballAPIClient:
 
-host_v = 'https://api-football-v1.p.rapidapi.com/v2'
-leagues_endpoint = '{}/leagues/type/league/{}/{}'
-league_endpoint = '{}/fixtures/league/{}'
+    CFG_INI_PATH = f"{dirname(abspath(__file__))}/config.ini"
+    cfg = configparser.ConfigParser()
+    cfg.read(CFG_INI_PATH)
+    leagues_ep = '{}/leagues/type/league/{}/{}'
+    league_ep = '{}/fixtures/league/{}'
 
-def get_league_rounds(season):
-    l_id = get_league_id(season)
-    response = requests.get(league_endpoint.format(host_v, l_id), headers=headers)
-    ret = response.json()
-    if ret['api']['results'] == 0:
-        return []
-    return ret['api']['fixtures']
+    def __init__(self):
+        self.headers = {}
+        api_cfg = self.__class__.cfg['FootballAPI']
+        self.host_v = f'{api_cfg["protocol"]}://{api_cfg["host"]}/{api_cfg["version"]}'
+        if api_cfg['secret_key_path']:
+            with open(api_cfg['secret_key_path'], 'r') as keyfile:
+                self.headers['X-RapidAPI-Key'] = keyfile.read()
 
-def get_league_id(season):
-    leagues = get_leagues_per_season(season)
-    serie_a_id = [x['league_id'] for x in leagues if x['name'] == 'Serie A']
-    return serie_a_id[0]
+    @classmethod
+    def set_secret_key_path(cls, filepath):
+        fabsp = abspath(filepath)
+        if not exists(fabsp):
+            raise FileNotFoundError(fabsp)
 
-def get_leagues_per_season(season):
-    raw = requests.get(leagues_endpoint.format(host_v, 'italy', season), headers=headers)
-    res = raw.json()
-    if res['api']['results'] == 0:
-        return []
-    return res['api']['leagues']
+        cls.cfg['FootballAPI']['secret_key_path'] = fabsp
+
+        with open(cls.CFG_INI_PATH, 'w') as configfile:
+            cls.cfg.write(configfile)
+
+    @classmethod
+    def unset_secret_key_path(cls):
+        cls.cfg['FootballAPI']['secret_key_path'] = ''
+
+        with open(cls.CFG_INI_PATH, 'w') as configfile:
+            cls.cfg.write(configfile)
+
+    def get_league_rounds(self, season):
+        self.ensure_key_registered()
+        l_id = self.get_league_id(season)
+        response = requests.get(self.__class__.league_ep.format(self.host_v, l_id), headers=self.headers)
+        ret = response.json()
+        if ret['api']['results'] == 0:
+            return []
+        return ret['api']['fixtures']
+
+    def get_league_id(self, season):
+        leagues = self.get_leagues_per_season(season)
+        serie_a_id = [x['league_id'] for x in leagues if x['name'] == 'Serie A']
+        return serie_a_id[0]
+
+    def get_leagues_per_season(self, season):
+        self.ensure_key_registered()
+        raw = requests.get(self.__class__.leagues_ep.format(self.host_v, 'italy', season), headers=self.headers)
+        res = raw.json()
+        if res['api']['results'] == 0:
+            return []
+        return res['api']['leagues']
+
+    def ensure_key_registered(self):
+        if not 'X-RapidAPI-Key' in self.headers:
+            if not self.__class__.cfg['FootballAPI']['secret_key_path']:
+                raise ValueError('Football API secret key not provided')
+            else:
+                path = self.__class__.cfg['FootballAPI']['secret_key_path']
+                with open(path, 'r') as keyfile:
+                    self.headers['X-RapidAPI-Key'] = keyfile.read()
