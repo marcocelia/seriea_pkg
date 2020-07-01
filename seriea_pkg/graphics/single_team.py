@@ -10,18 +10,12 @@ class SingleTeamGraphics:
 
 
     def roundsGraph(self):
-        # Pie chart, where the slices will be ordered and plotted counter-clockwise:
-        labels = 'Win', 'Draw', 'Loss'
-
-        sizes = [
-            100*self.teamRes.won/self.teamRes.played,
-            100*self.teamRes.draw/self.teamRes.played,
-            100*self.teamRes.loss/self.teamRes.played
-        ]
-
-        fig1, ax1 = plt.subplots()
-        ax1.pie(sizes, labels=labels, autopct='%1.1f%%',
-                shadow=True, startangle=90)
-        ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        labels = 'Won', 'Draw', 'Loss'
+        sizes = [ self.teamRes.won, self.teamRes.draw, self.teamRes.loss ]
+        fig = plt.figure(figsize=(10, 10))
+        ax1 = fig.subplots()
+        ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, labeldistance=None)
+        ax1.legend(title="Results")
+        ax1.axis('equal')
         plt.show()
 
