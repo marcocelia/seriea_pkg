@@ -60,11 +60,11 @@ class Rounds:
         if mtype.home():
             won_mask = (team_rounds.df[consts.GOALS_HOME] > team_rounds.df[consts.GOALS_AWAY])
             scored_mask = consts.GOALS_HOME
-            suffered_mask = consts.GOALS_AWAY
+            conceded_mask = consts.GOALS_AWAY
         else:
             won_mask = (team_rounds.df[consts.GOALS_AWAY] > team_rounds.df[consts.GOALS_HOME])
             scored_mask = consts.GOALS_AWAY
-            suffered_mask = consts.GOALS_HOME
+            conceded_mask = consts.GOALS_HOME
 
         draw_mask = (team_rounds.df[consts.GOALS_HOME] == team_rounds.df[consts.GOALS_AWAY])
 
@@ -72,5 +72,7 @@ class Rounds:
         draw = team_rounds.df[draw_mask].shape[0]
         loss = team_rounds.df.shape[0] - won - draw
         scored = team_rounds.df[scored_mask].sum()
-        suffered = team_rounds.df[suffered_mask].sum()
-        return TeamResult(teamname, won, draw, loss, scored, suffered)
+        max_scored = team_rounds.df[scored_mask].max()
+        conceded = team_rounds.df[conceded_mask].sum()
+        max_conceded = team_rounds.df[conceded_mask].max()
+        return TeamResult(teamname, won, draw, loss, scored, max_scored, conceded, max_conceded)

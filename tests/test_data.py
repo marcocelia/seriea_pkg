@@ -42,8 +42,8 @@ class DataTest(unittest.TestCase):
         self.assertEqual(juv_vs_int.draw, int_vs_juv.draw)
         self.assertEqual(juv_vs_int.loss, int_vs_juv.won)
         self.assertEqual(juv_vs_int.played, int_vs_juv.played)
-        self.assertEqual(juv_vs_int.scored, int_vs_juv.suffered)
-        self.assertEqual(juv_vs_int.suffered, int_vs_juv.scored)
+        self.assertEqual(juv_vs_int.scored, int_vs_juv.conceded)
+        self.assertEqual(juv_vs_int.conceded, int_vs_juv.scored)
 
         # Season 2017 :
         # Juventus - Inter: 0-0
@@ -52,14 +52,14 @@ class DataTest(unittest.TestCase):
         self.assertEqual(juv_vs_int.draw, 1)
         self.assertEqual(juv_vs_int.loss, 0)
         self.assertEqual(juv_vs_int.scored, 3)
-        self.assertEqual(juv_vs_int.suffered, 2)
+        self.assertEqual(juv_vs_int.conceded, 2)
 
         juv_vs_int_home = self.rounds.filter_team('Inter').compute_team_results('Juventus', 'home')
         self.assertEqual(juv_vs_int_home.won, 0)
         self.assertEqual(juv_vs_int_home.draw, 1)
         self.assertEqual(juv_vs_int_home.loss, 0)
         self.assertEqual(juv_vs_int_home.scored, 0)
-        self.assertEqual(juv_vs_int_home.suffered, 0)
+        self.assertEqual(juv_vs_int_home.conceded, 0)
 
         juv_away_vs_int_home = self.rounds.filter_team('Inter', 'home').compute_team_results('Juventus', 'away')
         int_home_vs_juv_away = self.rounds.filter_team('Juventus', 'away').compute_team_results('Inter', 'home')
@@ -67,14 +67,12 @@ class DataTest(unittest.TestCase):
         self.assertEqual(juv_away_vs_int_home.draw, int_home_vs_juv_away.draw)
         self.assertEqual(juv_away_vs_int_home.loss, int_home_vs_juv_away.won)
         self.assertEqual(juv_away_vs_int_home.played, int_home_vs_juv_away.played)
-        self.assertEqual(juv_away_vs_int_home.scored, int_home_vs_juv_away.suffered)
-        self.assertEqual(juv_away_vs_int_home.suffered, int_home_vs_juv_away.scored)
+        self.assertEqual(juv_away_vs_int_home.scored, int_home_vs_juv_away.conceded)
+        self.assertEqual(juv_away_vs_int_home.conceded, int_home_vs_juv_away.scored)
 
         # It should not be possibile to have a match where both teams play home or away
-        juv_home_vs_int_home = self.rounds.filter_team('Juventus', 'home').compute_team_results('Inter', 'home')
-        juv_away_vs_int_away = self.rounds.filter_team('Juventus', 'away').compute_team_results('Inter', 'away')
-        self.assertEqual(juv_home_vs_int_home.played, 0)
-        self.assertEqual(juv_away_vs_int_away.played, 0)
+        with self.assertRaises(ZeroDivisionError):
+            self.rounds.filter_team('Juventus', 'home').compute_team_results('Inter', 'home')
 
-if __name__ == '__main__':
-    unittest.main()
+        with self.assertRaises(ZeroDivisionError):
+            self.rounds.filter_team('Juventus', 'away').compute_team_results('Inter', 'away')

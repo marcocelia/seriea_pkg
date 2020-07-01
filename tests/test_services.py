@@ -7,7 +7,6 @@ class ServicesTest(unittest.TestCase):
         super().tearDown()
         FootballAPIClient.unset_secret_key_path()
 
-
     def test_footballapi_client(self):
         fbclient = FootballAPIClient()
         with self.assertRaises(ValueError):
