@@ -9,13 +9,14 @@ class ServicesTest(unittest.TestCase):
 
     def test_footballapi_client(self):
         fbclient = FootballAPIClient()
+
+        #cannot fetch data without a secret key
         with self.assertRaises(ValueError):
             fbclient.get_league_id(2017)
 
         FootballAPIClient.set_secret_key_path('keyfile.txt')
 
-        # Registration make working either old or new client
+        # Registration make working either old and new client
         self.assertEqual(fbclient.get_league_id(2017), 28)
         newclient = FootballAPIClient()
         self.assertEqual(newclient.get_league_id(2017), 28)
-

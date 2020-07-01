@@ -54,12 +54,12 @@ class DataTest(unittest.TestCase):
         self.assertEqual(juv_vs_int.scored, 3)
         self.assertEqual(juv_vs_int.conceded, 2)
 
-        juv_vs_int_home = self.rounds.filter_team('Inter').compute_team_results('Juventus', 'home')
-        self.assertEqual(juv_vs_int_home.won, 0)
-        self.assertEqual(juv_vs_int_home.draw, 1)
-        self.assertEqual(juv_vs_int_home.loss, 0)
-        self.assertEqual(juv_vs_int_home.scored, 0)
-        self.assertEqual(juv_vs_int_home.conceded, 0)
+        juv_home_vs_int = self.rounds.filter_team('Inter').compute_team_results('Juventus', 'home')
+        self.assertEqual(juv_home_vs_int.won, 0)
+        self.assertEqual(juv_home_vs_int.draw, 1)
+        self.assertEqual(juv_home_vs_int.loss, 0)
+        self.assertEqual(juv_home_vs_int.scored, 0)
+        self.assertEqual(juv_home_vs_int.conceded, 0)
 
         juv_away_vs_int_home = self.rounds.filter_team('Inter', 'home').compute_team_results('Juventus', 'away')
         int_home_vs_juv_away = self.rounds.filter_team('Juventus', 'away').compute_team_results('Inter', 'home')

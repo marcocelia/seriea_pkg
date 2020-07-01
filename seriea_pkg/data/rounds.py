@@ -5,8 +5,14 @@ from seriea_pkg.data.match_type import MatchType
 import pandas as pd
 
 class Rounds:
+    """
+    The class modelling a set of football rounds
+    """
 
     def __init__(self, dataframe):
+        """
+        Create a new Round object from the provided dataframe whether it is valid
+        """
         validator = RoundsValidator()
         if not validator.is_valid(dataframe):
             raise ValueError('Provided dataframe is not valid')
@@ -22,10 +28,16 @@ class Rounds:
         return self.df.shape[0]
 
     def subset(self, start, end):
+        """
+        Return the subset of rounds from start to end
+        """
         mask = (self.df[consts.ROUND] >= start) & (self.df[consts.ROUND] <= end )
         return Rounds(self.df[mask])
 
     def ranking(self):
+        """
+        Compute the full teams ranking for current rounds
+        """
         teams = self.df[consts.HOME_TEAM].unique()
         rank = {}
         for t in teams:
@@ -38,6 +50,9 @@ class Rounds:
         return rank_df
 
     def filter_team(self, teamname, strtype=MatchType.TYPE_ALL):
+        """
+        Returns the subset of rounds involving the provided team. Possible restrictions for home, away or all.
+        """
         mtype = MatchType(strtype)
 
         if mtype.all():

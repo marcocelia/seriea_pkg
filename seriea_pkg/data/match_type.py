@@ -1,5 +1,8 @@
 
 class MatchType:
+    """
+    Utility class performing a safe cast from generic string to a match type
+    """
 
     TYPE_ALL = 'all'
     TYPE_HOME = 'home'
