@@ -43,10 +43,27 @@ def set_default_datasets_path(dirpath):
     if not exists(fabsp):
         raise FileNotFoundError(fabsp)
 
+    set_config_key('Datasets','path', fabsp)
+
+def set_default_stats_path(dirpath):
+    """
+    Setup the default datasets path that will be used for any subsequent stats storage or
+    retrieval. The path is stored into a package internal config file.
+
+    Params:
+    - dirpath: the dasetpath
+    """
+    fabsp = abspath(dirpath)
+    if not exists(fabsp):
+        raise FileNotFoundError(fabsp)
+
+    set_config_key('StatsStorage','path', fabsp)
+
+def set_config_key(topic, key, value):
     ini_path = f"{dirname(abspath(__file__))}/config.ini"
     cfg = configparser.ConfigParser()
     cfg.read(ini_path)
-    cfg['Datasets']['path'] = fabsp
+    cfg[topic][key] = value
 
     with open(ini_path, 'w') as configfile:
         cfg.write(configfile)
@@ -56,13 +73,23 @@ def get_default_datasets_path():
     Return the default dataset path from internal config file. Raises a FileNotFoundError
     in case no default dataset have been specified.
     """
+    return get_config_key('Datasets','path')
+
+def get_default_stats_path():
+    """
+    Return the default stats path from internal config file. Raises a FileNotFoundError
+    in case no default stats have been specified.
+    """
+    return get_config_key('StatsStorage','path')
+
+def get_config_key(topic, key):
     ini_path = f"{dirname(abspath(__file__))}/config.ini"
     cfg = configparser.ConfigParser()
     cfg.read(ini_path)
-    if not cfg['Datasets']['path']:
-        raise FileNotFoundError('No default dataset dir provided')
+    if not cfg[topic][key]:
+        raise FileNotFoundError(f'No default {topic} dir provided')
 
-    return cfg['Datasets']['path']
+    return cfg[topic][key]
 
 def download_dataset(season):
     """

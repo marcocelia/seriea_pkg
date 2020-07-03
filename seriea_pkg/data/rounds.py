@@ -65,6 +65,9 @@ class Rounds:
         return Rounds(self.df[mask])
 
     def compute_team_results(self, teamname, strtype=MatchType.TYPE_ALL):
+        """
+        Compute team stastics for the current set of rounds. Possible restrictions for home, away or all.
+        """
         mtype = MatchType(strtype)
 
         if mtype.all():
@@ -84,7 +87,7 @@ class Rounds:
         draw_mask = (team_rounds.df[consts.GOALS_HOME] == team_rounds.df[consts.GOALS_AWAY])
 
         return TeamResult(
-            team=teamname,
+            team = teamname,
             won = team_rounds.df[won_mask].shape[0],
             draw = team_rounds.df[draw_mask].shape[0],
             loss = team_rounds.df.shape[0] -  team_rounds.df[won_mask].shape[0] - team_rounds.df[draw_mask].shape[0],

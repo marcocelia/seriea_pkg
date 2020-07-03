@@ -1,6 +1,8 @@
 from seriea_pkg.data import constants as consts
+from seriea_pkg.data import dataset
 from seriea_pkg.data.match_type import MatchType
 from itertools import starmap
+import csv
 
 class TeamResult:
 
@@ -57,3 +59,10 @@ class TeamResult:
     @classmethod
     def sort_criteria(cls):
         return ['PS', 'GS']
+
+    def to_csv(self, fname, *args):
+        dir = args[0] if args else dataset.get_default_stats_path()
+        f = open(f'{dir}/{fname}.csv', 'w')
+        with f:
+            writer = csv.writer(f)
+            writer.writerows([self.__class__.get_labels(), self.as_tuple()])
