@@ -4,32 +4,33 @@ from itertools import starmap
 
 class TeamResult:
 
-    def __init__(self, team, won, draw, loss, scored, max_scored, conceded,max_conceded):
+    def __init__(self, *, team, won, draw, loss, scored, max_scored, conceded, max_conceded):
         self.team = team
         self.won = won
         self.draw = draw
         self.loss = loss
         self.played = won + draw + loss
         self.points = 3*self.won + self.draw
-        self.points_avg = self.points/self.played
-        self.scored = scored
-        self.max_scored = max_scored
-        self.conceded = conceded
-        self.max_conceded = max_conceded
+        self.points_avg = self.points/self.played if self.played > 0 else 0
+        self.scored = scored if self.played > 0 else 0
+        self.max_scored = max_scored if self.played > 0 else 0
+        self.conceded = conceded if self.played > 0 else 0
+        self.max_conceded = max_conceded if self.played > 0 else 0
 
     def __add__(self, o):
         if self.team != o.team:
             raise ValueError('Cannot sum result from different teams')
 
-        twon = self.won + o.won
-        tdraw = self.draw + o.draw
-        tloss = self.loss + o.loss
-        tscored = self.scored + o.scored
-        tconceded = self.conceded + o.conceded
-        mmax_scored = max(self.max_scored, o.max_scored)
-        mmax_conceded = max(self.max_conceded, o.max_conceded)
-
-        return TeamResult(self.team, twon, tdraw, tloss, tscored, mmax_scored, tconceded, mmax_conceded)
+        return TeamResult(
+            team =self.team,
+            won = self.won + o.won,
+            draw = self.draw + o.draw,
+            loss = self.loss + o.loss,
+            scored = self.scored + o.scored,
+            conceded = self.conceded + o.conceded,
+            max_scored = max(self.max_scored, o.max_scored),
+            max_conceded = max(self.max_conceded, o.max_conceded)
+        )
 
     def __str__(self):
         pairs = list(zip(self.get_labels(), self.as_tuple()))
