@@ -71,8 +71,8 @@ class DataTest(unittest.TestCase):
         self.assertEqual(juv_away_vs_int_home.conceded, int_home_vs_juv_away.scored)
 
         # It should not be possibile to have a match where both teams play home or away
-        with self.assertRaises(ZeroDivisionError):
-            self.rounds.filter_team('Juventus', 'home').compute_team_results('Inter', 'home')
+        int_home_vs_juv_home = self.rounds.filter_team('Juventus', 'home').compute_team_results('Inter', 'home')
+        self.assertEqual(int_home_vs_juv_home.played, 0)
 
-        with self.assertRaises(ZeroDivisionError):
-            self.rounds.filter_team('Juventus', 'away').compute_team_results('Inter', 'away')
+        int_away_vs_juv_away = self.rounds.filter_team('Juventus', 'away').compute_team_results('Inter', 'away')
+        self.assertEqual(int_away_vs_juv_away.played, 0)
