@@ -11,7 +11,7 @@ class RoundGraphics:
         self.teams = sorted(list(self.ranking.index.values))
 
 
-    def cmpOn(self, label):
+    def compare_by(self, label):
         allowed = TeamResult.get_labels()
         if label not in allowed:
             raise ValueError(f'Provided {label} is not valid. Available labels are: ' + ','.join(allowed))

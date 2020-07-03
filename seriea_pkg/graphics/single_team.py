@@ -9,7 +9,7 @@ class SingleTeamGraphics:
         self.teamRes = teamRes
 
 
-    def roundsGraph(self):
+    def rounds_graph(self):
         labels = 'Won', 'Draw', 'Loss'
         sizes = [ self.teamRes.won, self.teamRes.draw, self.teamRes.loss ]
         fig = plt.figure(figsize=(10, 10))
