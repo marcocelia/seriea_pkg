@@ -5,6 +5,9 @@ from itertools import starmap
 import csv
 
 class TeamResult:
+    """
+    A wrapper class for the most common team results and statistics
+    """
 
     def __init__(self, *, team, won, draw, loss, scored, max_scored, conceded, max_conceded):
         self.team = team
@@ -39,6 +42,9 @@ class TeamResult:
         return self.team + ': ' + ', '.join(starmap(lambda x,y: f"{x}={y}", pairs))
 
     def as_tuple(self):
+        """
+        Convert self to a tuple
+        """
         return (
             self.points,
             self.points_avg,
@@ -54,10 +60,26 @@ class TeamResult:
 
     @classmethod
     def get_labels(cls):
+        """
+        Returns the following labels:
+        - Points
+        - Points Average
+        - Played
+        - Won
+        - Draw
+        - Loss
+        - Goals scored
+        - Max goals scored in a single round
+        - Goals conceeded
+        - Max goals conceeded in a single round
+        """
         return ('PS', 'PS-AVG', 'P', 'W', 'D', 'L', 'GS', 'GS-M', 'GC', 'GC-M')
 
     @classmethod
     def sort_criteria(cls):
+        """
+        Return an array containing the columns with respect to TeamResults shall be ordered
+        """
         return ['PS', 'GS']
 
     def to_csv(self, fname, *args):

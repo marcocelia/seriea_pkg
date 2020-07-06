@@ -4,6 +4,9 @@ import configparser
 from os.path import abspath, dirname, exists
 
 class FootballAPIClient:
+    """
+    A simple REST client for Football API
+    """
 
     CFG_INI_PATH = f"{dirname(abspath(__file__))}/config.ini"
     cfg = configparser.ConfigParser()
@@ -21,6 +24,9 @@ class FootballAPIClient:
 
     @classmethod
     def set_secret_key_path(cls, filepath):
+        """
+        Store the path to the file containing the secret key needed to query Football API
+        """
         fabsp = abspath(filepath)
         if not exists(fabsp):
             raise FileNotFoundError(fabsp)
@@ -32,12 +38,18 @@ class FootballAPIClient:
 
     @classmethod
     def unset_secret_key_path(cls):
+        """
+        Unregister the current key file path
+        """
         cls.cfg['FootballAPI']['secret_key_path'] = ''
 
         with open(cls.CFG_INI_PATH, 'w') as configfile:
             cls.cfg.write(configfile)
 
     def get_league_rounds(self, season):
+        """
+        Given the season year retrieves all rounds belonging to such season
+        """
         self.ensure_key_registered()
         l_id = self.get_league_id(season)
         response = requests.get(self.__class__.league_ep.format(self.host_v, l_id), headers=self.headers)
@@ -47,11 +59,17 @@ class FootballAPIClient:
         return ret['api']['fixtures']
 
     def get_league_id(self, season):
+        """
+        Given the season year returns the Serie A league_id as returned from footbal API
+        """
         leagues = self.get_leagues_per_season(season)
         serie_a_id = [x['league_id'] for x in leagues if x['name'] == 'Serie A']
         return serie_a_id[0]
 
     def get_leagues_per_season(self, season):
+        """
+        Given the season year list all leagues available for that year
+        """
         self.ensure_key_registered()
         raw = requests.get(self.__class__.leagues_ep.format(self.host_v, 'italy', season), headers=self.headers)
         res = raw.json()
@@ -60,6 +78,9 @@ class FootballAPIClient:
         return res['api']['leagues']
 
     def ensure_key_registered(self):
+        """
+        Ensure the secret key is present before making a request to Football API
+        """
         if not 'X-RapidAPI-Key' in self.headers:
             if not self.__class__.cfg['FootballAPI']['secret_key_path']:
                 raise ValueError('Football API secret key not provided')

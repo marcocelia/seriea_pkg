@@ -60,6 +60,13 @@ def set_default_stats_path(dirpath):
     set_config_key('StatsStorage','path', fabsp)
 
 def set_config_key(topic, key, value):
+    """
+    Writes a generic property under the topic sections in confing.ini file
+    Params:
+    - topic: The config section
+    - key: The property key
+    - value: The property value
+    """
     ini_path = f"{dirname(abspath(__file__))}/config.ini"
     cfg = configparser.ConfigParser()
     cfg.read(ini_path)
@@ -83,6 +90,12 @@ def get_default_stats_path():
     return get_config_key('StatsStorage','path')
 
 def get_config_key(topic, key):
+    """
+    Return a generic property belonging to the provided topic from config file
+    Params:
+    - topic: The config section
+    - key: The property key
+    """
     ini_path = f"{dirname(abspath(__file__))}/config.ini"
     cfg = configparser.ConfigParser()
     cfg.read(ini_path)

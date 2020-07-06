@@ -6,12 +6,15 @@ class RoundGraphics:
 
     def __init__(self, rounds):
         if not isinstance(rounds, Rounds):
-            raise TypeError('Required Rounds object')
+            raise TypeError('Rounds object required')
         self.ranking = rounds.ranking()
         self.teams = sorted(list(self.ranking.index.values))
 
 
     def compare_by(self, label):
+        """
+        Display a bar plot comparing all teams belonging to a round with respect to the provided column
+        """
         allowed = TeamResult.get_labels()
         if label not in allowed:
             raise ValueError(f'Provided {label} is not valid. Available labels are: ' + ','.join(allowed))

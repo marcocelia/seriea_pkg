@@ -5,11 +5,14 @@ class SingleTeamGraphics:
 
     def __init__(self, teamRes):
         if not isinstance(teamRes,TeamResult):
-            raise TypeError('Required TeamResult object')
+            raise TypeError('TeamResult object required')
         self.teamRes = teamRes
 
 
     def rounds_graph(self):
+        """
+        Display a pie plot showing the round's result
+        """
         labels = 'Won', 'Draw', 'Loss'
         sizes = [ self.teamRes.won, self.teamRes.draw, self.teamRes.loss ]
         fig = plt.figure(figsize=(10, 10))
